@@ -17,3 +17,7 @@ export async function storeFreelance(
 		data: { ...freelance },
 	});
 }
+
+export async function getFreelances(): Promise<Freelance[]> {
+	return prisma.freelance.findMany();
+}

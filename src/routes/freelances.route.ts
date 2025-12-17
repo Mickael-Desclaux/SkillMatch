@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { createFreelance } from "../controllers/freelances.controller.js";
+import {
+	createFreelance,
+	getAllFreelances,
+} from "../controllers/freelances.controller.js";
 
 const router = Router();
 
+router.get("/", getAllFreelances);
 router.post("/create", createFreelance);
 
 export { router as FreelanceRoute };

@@ -1,11 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
-import { prisma } from "../orm/client.js";
 import type { CreateFreelanceDtoInputs } from "../types/freelance.dto.js";
 import {
 	checkExistingFreelance,
+	getFreelances,
 	storeFreelance,
 } from "../services/freelances.service.js";
-import type { JsonApiResponse } from "../middlewares/json-api-response.middleware.js";
 
 export async function createFreelance(
 	req: Request,
@@ -25,6 +24,21 @@ export async function createFreelance(
 		const freelance = await storeFreelance(body);
 
 		return res.jsonSuccess(freelance, 201);
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function getAllFreelances(
+	req: Request,
+	res: Response,
+	next: NextFunction
+): Promise<void> {
+	try {
+		const freelances = await getFreelances();
+		if (!freelances) return res.jsonError("No freelances found", 404);
+
+		return res.jsonSuccess(freelances, 200);
 	} catch (error) {
 		next(error);
 	}
