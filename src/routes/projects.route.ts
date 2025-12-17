@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { getAllOpenProjects } from "../controllers/projects.controller";
+import {
+	getAllCandidates,
+	getAllOpenProjects,
+} from "../controllers/projects.controller";
 
 const router = Router();
 
 router.get("/open", getAllOpenProjects);
+router.get("/:id/candidatesWithScore", getAllCandidates);
 
 export { router as ProjectRouter };
