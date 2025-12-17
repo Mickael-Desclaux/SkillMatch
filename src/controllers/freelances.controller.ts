@@ -1,9 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
 import type { CreateFreelanceDtoInputs } from "../types/freelance.dto.js";
 import {
-	checkExistingFreelance,
-	getFreelances,
-	storeFreelance,
+	checkExisting,
+	getAll,
+	getById,
+	store,
 } from "../services/freelances.service.js";
 
 export async function createFreelance(
@@ -14,14 +15,14 @@ export async function createFreelance(
 	try {
 		const body: CreateFreelanceDtoInputs = req.body;
 
-		const existingFreelance = await checkExistingFreelance(body.email);
+		const existingFreelance = await checkExisting(body.email);
 		if (existingFreelance)
 			return res.jsonError(
 				`An account already exists with the email ${body.email}`,
 				409
 			);
 
-		const freelance = await storeFreelance(body);
+		const freelance = await store(body);
 
 		return res.jsonSuccess(freelance, 201);
 	} catch (error) {
@@ -35,10 +36,28 @@ export async function getAllFreelances(
 	next: NextFunction
 ): Promise<void> {
 	try {
-		const freelances = await getFreelances();
+		const freelances = await getAll();
 		if (!freelances) return res.jsonError("No freelances found", 404);
 
 		return res.jsonSuccess(freelances, 200);
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function getFreelanceById(
+	req: Request,
+	res: Response,
+	next: NextFunction
+): Promise<void> {
+	try {
+		const id = req.params.id;
+		if (!id) return res.jsonError("You must enter a valid id", 404);
+
+		const freelance = await getById(+id);
+		if (!freelance) return res.jsonError("No freelances found", 404);
+
+		return res.jsonSuccess(freelance, 200);
 	} catch (error) {
 		next(error);
 	}
