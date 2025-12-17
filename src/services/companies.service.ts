@@ -1,4 +1,4 @@
-import type { Company, Project } from "../generated/prisma/client";
+import type { Company, Freelance, Project } from "../generated/prisma/client";
 import { prisma } from "../orm/client";
 import type {
 	CreateCompanyDtoInputs,
@@ -42,5 +42,39 @@ export async function addProject(
 export async function getProjects(id: number): Promise<Project[]> {
 	return await prisma.project.findMany({
 		where: { companyId: id },
+	});
+}
+
+export async function getProjectById(
+	companyId: number,
+	projectId: number
+): Promise<Project | null> {
+	return await prisma.project.findUnique({
+		where: {
+			companyId,
+			id: projectId,
+		},
+	});
+}
+
+export async function getMatchingCandidates(
+	requestedSkills: string[],
+	maxDailyRate: number
+): Promise<Freelance[]> {
+	return prisma.freelance.findMany({
+		where: {
+			AND: [
+				{
+					skills: {
+						hasEvery: requestedSkills.map((skill) => skill.toLowerCase()),
+					},
+				},
+				{
+					dailyRate: {
+						lte: maxDailyRate,
+					},
+				},
+			],
+		},
 	});
 }
