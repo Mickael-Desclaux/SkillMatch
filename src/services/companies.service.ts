@@ -38,3 +38,9 @@ export async function addProject(
 		},
 	});
 }
+
+export async function getProjects(id: number): Promise<Project[]> {
+	return await prisma.project.findMany({
+		where: { companyId: id },
+	});
+}

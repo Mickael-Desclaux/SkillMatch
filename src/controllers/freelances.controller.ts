@@ -37,7 +37,7 @@ export async function getAllFreelances(
 ): Promise<void> {
 	try {
 		const freelances = await getAll();
-		if (!freelances) return res.jsonError("No freelances found", 404);
+		if (!freelances.length) return res.jsonError("No freelances found", 404);
 
 		return res.jsonSuccess(freelances, 200);
 	} catch (error) {

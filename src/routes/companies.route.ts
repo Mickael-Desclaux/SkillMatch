@@ -3,6 +3,7 @@ import {
 	createCompany,
 	createProject,
 	getAllCompanies,
+	getAllProjects,
 	getCompanyById,
 } from "../controllers/companies.controller.js";
 
@@ -10,6 +11,7 @@ const router = Router();
 
 router.get("/", getAllCompanies);
 router.get("/:id", getCompanyById);
+router.get("/:id/projects", getAllProjects);
 router.post("/", createCompany);
 router.post("/:id/projects", createProject);
 
