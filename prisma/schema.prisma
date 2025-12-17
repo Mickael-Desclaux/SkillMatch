@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Freelance {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  skills    String[]
+  dailyRate Int      @map("daily_rate")
+
+  @@map("freelance")
+}
+
+model Company {
+  id       Int    @id @default(autoincrement())
+  name     String
+  industry String
+
+  projects Project[]
+
+  @@map("company")
+}
+
+model Project {
+  id              Int      @id @default(autoincrement())
+  title           String
+  description     String
+  requestedSkills String[] @map("requested_skills")
+  maxDailyRate    Int      @map("max_daily_rate")
+  companyId       Int      @map("company_id")
+  freelanceId     Int?     @map("freelance_id")
+
+  company Company @relation(fields: [companyId], references: [id])
+}
