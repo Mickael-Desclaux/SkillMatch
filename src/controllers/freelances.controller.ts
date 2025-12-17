@@ -5,6 +5,7 @@ import {
 	checkExisting,
 	checkMatchingProject,
 	getAll,
+	getAllFilteredBySkill,
 	getById,
 	getMatchingProjects,
 	getProjectById,
@@ -40,6 +41,15 @@ export async function getAllFreelances(
 	next: NextFunction
 ): Promise<void> {
 	try {
+		const skill = req.query.skill;
+
+		if (skill && typeof skill === "string") {
+			const freelances = await getAllFilteredBySkill(skill.toLowerCase());
+			if (!freelances.length)
+				return res.jsonError("No freelances found with this skill", 404);
+			return res.jsonSuccess(freelances, 200);
+		}
+
 		const freelances = await getAll();
 		if (!freelances.length) return res.jsonError("No freelances found", 404);
 

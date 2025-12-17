@@ -29,6 +29,18 @@ export async function getAll(): Promise<Freelance[]> {
 	return await prisma.freelance.findMany();
 }
 
+export async function getAllFilteredBySkill(
+	skill: string
+): Promise<Freelance[]> {
+	return await prisma.freelance.findMany({
+		where: {
+			skills: {
+				has: skill,
+			},
+		},
+	});
+}
+
 export async function getById(id: number): Promise<Freelance | null> {
 	return await prisma.freelance.findUnique({
 		where: { id },
