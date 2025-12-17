@@ -1,10 +1,13 @@
-import type { NextFunction, Request, Response } from "express";
+import { type NextFunction, type Request, type Response } from "express";
 import type { CreateFreelanceDtoInputs } from "../types/freelance.dto.js";
 import {
+	apply,
 	checkExisting,
+	checkMatchingProject,
 	getAll,
 	getById,
 	getMatchingProjects,
+	getProjectById,
 	store,
 } from "../services/freelances.service.js";
 
@@ -81,6 +84,48 @@ export async function getAllMatchingProjects(
 			return res.jsonError("No matching projects found", 404);
 
 		return res.jsonSuccess(matchingProjects, 200);
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function applyToProject(
+	req: Request,
+	res: Response,
+	next: NextFunction
+): Promise<void> {
+	try {
+		const freelanceId = req.params.id;
+		if (!freelanceId)
+			return res.jsonError("Please enter a valid freelance id", 404);
+
+		const projectId = req.params.projectId;
+		if (!projectId)
+			return res.jsonError("Please enter a valid project id", 404);
+
+		const freelance = await getById(+freelanceId);
+		if (!freelance) return res.jsonError("Freelance not found", 404);
+
+		const project = await getProjectById(+projectId);
+		if (!project) return res.jsonError("Project not found", 404);
+
+		if (project.freelanceId === +freelanceId)
+			return res.jsonError("You are already assigned to this project!", 409);
+
+		const alreadyAssigned = project.freelanceId ? true : false;
+		if (alreadyAssigned)
+			return res.jsonError("This project is already assigned", 409);
+
+		const matchingProject = await checkMatchingProject(freelance, project);
+		if (!matchingProject)
+			return res.jsonError("This project doesn't match with your profile", 401);
+
+		await apply(+freelanceId, +projectId);
+
+		return res.jsonSuccess(
+			"Congratulations! You are no assigned to this project!",
+			201
+		);
 	} catch (error) {
 		next(error);
 	}

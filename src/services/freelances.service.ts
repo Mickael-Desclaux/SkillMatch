@@ -49,3 +49,33 @@ export async function getMatchingProjects(
 		)
 	);
 }
+
+export async function getProjectById(id: number): Promise<Project | null> {
+	return await prisma.project.findUnique({ where: { id } });
+}
+
+export async function checkMatchingProject(
+	freelance: Freelance,
+	project: Project
+): Promise<boolean> {
+	const matchingDailyRate = freelance.dailyRate <= project.maxDailyRate;
+
+	const freelanceSkills = freelance.skills.map((s) => s.toLowerCase());
+	const matchingSkills = project.requestedSkills.every((skill) =>
+		freelanceSkills.includes(skill.toLowerCase())
+	);
+
+	return matchingDailyRate && matchingSkills;
+}
+
+export async function apply(
+	freelanceId: number,
+	projectId: number
+): Promise<void> {
+	await prisma.project.update({
+		where: { id: projectId },
+		data: {
+			freelanceId,
+		},
+	});
+}
