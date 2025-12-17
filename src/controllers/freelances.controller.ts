@@ -4,6 +4,7 @@ import {
 	checkExisting,
 	getAll,
 	getById,
+	getMatchingProjects,
 	store,
 } from "../services/freelances.service.js";
 
@@ -58,6 +59,28 @@ export async function getFreelanceById(
 		if (!freelance) return res.jsonError("No freelance found", 404);
 
 		return res.jsonSuccess(freelance, 200);
+	} catch (error) {
+		next(error);
+	}
+}
+
+export async function getAllMatchingProjects(
+	req: Request,
+	res: Response,
+	next: NextFunction
+): Promise<void> {
+	try {
+		const id = req.params.id;
+		if (!id) return res.jsonError("Please enter a valid freelance id", 404);
+
+		const freelance = await getById(+id);
+		if (!freelance) return res.jsonError("No freelance found", 404);
+
+		const matchingProjects = await getMatchingProjects(freelance);
+		if (!matchingProjects.length)
+			return res.jsonError("No matching projects found", 404);
+
+		return res.jsonSuccess(matchingProjects, 200);
 	} catch (error) {
 		next(error);
 	}
