@@ -1,6 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../orm/client.js";
 import type { CreateFreelanceDtoInputs } from "../types/freelance.dto.js";
+import {
+	checkExistingFreelance,
+	storeFreelance,
+} from "../services/freelances.service.js";
+import type { JsonApiResponse } from "../middlewares/json-api-response.middleware.js";
 
 export async function createFreelance(
 	req: Request,
@@ -10,18 +15,14 @@ export async function createFreelance(
 	try {
 		const body: CreateFreelanceDtoInputs = req.body;
 
-		const existingFreelance = await prisma.freelance.findUnique({
-			where: { email: body.email },
-		});
+		const existingFreelance = await checkExistingFreelance(body.email);
 		if (existingFreelance)
 			return res.jsonError(
 				`An account already exists with the email ${body.email}`,
 				409
 			);
 
-		const freelance = await prisma.freelance.create({
-			data: { ...body },
-		});
+		const freelance = await storeFreelance(body);
 
 		return res.jsonSuccess(freelance, 201);
 	} catch (error) {
