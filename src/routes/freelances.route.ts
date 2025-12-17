@@ -9,6 +9,6 @@ const router = Router();
 
 router.get("/", getAllFreelances);
 router.get("/:id", getFreelanceById);
-router.post("/create", createFreelance);
+router.post("/", createFreelance);
 
 export { router as FreelanceRoute };

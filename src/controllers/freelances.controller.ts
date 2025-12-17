@@ -55,7 +55,7 @@ export async function getFreelanceById(
 		if (!id) return res.jsonError("You must enter a valid id", 404);
 
 		const freelance = await getById(+id);
-		if (!freelance) return res.jsonError("No freelances found", 404);
+		if (!freelance) return res.jsonError("No freelance found", 404);
 
 		return res.jsonSuccess(freelance, 200);
 	} catch (error) {

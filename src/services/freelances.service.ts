@@ -22,13 +22,11 @@ export async function store(
 }
 
 export async function getAll(): Promise<Freelance[]> {
-	return prisma.freelance.findMany();
+	return await prisma.freelance.findMany();
 }
 
 export async function getById(id: number): Promise<Freelance | null> {
-	const freelance = prisma.freelance.findUnique({
+	return await prisma.freelance.findUnique({
 		where: { id },
 	});
-
-	return freelance;
 }
