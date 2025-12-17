@@ -1,6 +1,10 @@
 import type { Freelance, Project } from "../generated/prisma/client";
 import { prisma } from "../orm/client";
 import type { CreateFreelanceDtoInputs } from "../types/freelance.dto";
+import {
+	checkMatchingProject as checkMatch,
+	getMatchingProjectsForFreelance,
+} from "./matching.service";
 
 export async function checkExisting(email: string): Promise<boolean> {
 	const freelance = await prisma.freelance.findUnique({
@@ -34,20 +38,7 @@ export async function getById(id: number): Promise<Freelance | null> {
 export async function getMatchingProjects(
 	freelance: Freelance
 ): Promise<Project[]> {
-	const allProjects = await prisma.project.findMany({
-		where: {
-			maxDailyRate: {
-				gte: freelance.dailyRate,
-			},
-		},
-	});
-
-	const freelanceSkills = freelance.skills.map((skill) => skill.toLowerCase());
-	return allProjects.filter((project) =>
-		project.requestedSkills.every((skill) =>
-			freelanceSkills.includes(skill.toLowerCase())
-		)
-	);
+	return getMatchingProjectsForFreelance(freelance);
 }
 
 export async function getProjectById(id: number): Promise<Project | null> {
@@ -58,14 +49,7 @@ export async function checkMatchingProject(
 	freelance: Freelance,
 	project: Project
 ): Promise<boolean> {
-	const matchingDailyRate = freelance.dailyRate <= project.maxDailyRate;
-
-	const freelanceSkills = freelance.skills.map((s) => s.toLowerCase());
-	const matchingSkills = project.requestedSkills.every((skill) =>
-		freelanceSkills.includes(skill.toLowerCase())
-	);
-
-	return matchingDailyRate && matchingSkills;
+	return checkMatch(freelance, project);
 }
 
 export async function apply(

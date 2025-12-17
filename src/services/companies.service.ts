@@ -4,6 +4,7 @@ import type {
 	CreateCompanyDtoInputs,
 	CreateProjectDtoInputs,
 } from "../types/company.dto";
+import { getMatchingCandidatesForProject } from "./matching.service";
 
 export async function store(company: CreateCompanyDtoInputs): Promise<Company> {
 	return await prisma.company.create({
@@ -61,20 +62,5 @@ export async function getMatchingCandidates(
 	requestedSkills: string[],
 	maxDailyRate: number
 ): Promise<Freelance[]> {
-	return prisma.freelance.findMany({
-		where: {
-			AND: [
-				{
-					skills: {
-						hasEvery: requestedSkills.map((skill) => skill.toLowerCase()),
-					},
-				},
-				{
-					dailyRate: {
-						lte: maxDailyRate,
-					},
-				},
-			],
-		},
-	});
+	return getMatchingCandidatesForProject(requestedSkills, maxDailyRate);
 }
