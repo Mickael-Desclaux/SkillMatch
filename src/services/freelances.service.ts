@@ -14,7 +14,10 @@ export async function store(
 	freelance: CreateFreelanceDtoInputs
 ): Promise<Freelance> {
 	return await prisma.freelance.create({
-		data: { ...freelance },
+		data: {
+			...freelance,
+			skills: freelance.skills.map((skill) => skill.toLowerCase()),
+		},
 	});
 }
 
