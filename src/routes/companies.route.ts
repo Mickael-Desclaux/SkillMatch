@@ -7,6 +7,8 @@ import {
 	getAllProjects,
 	getCompanyById,
 } from "../controllers/companies.controller.js";
+import { validateBody } from "../middlewares/validate.middleware.js";
+import { CreateCompanyDtoSchema, CreateProjectDtoSchema } from "../types/company.dto.js";
 
 const router = Router();
 
@@ -17,7 +19,7 @@ router.get(
 	"/:id/projects/:projectId/matchingCandidates",
 	getAllMatchingCandidates
 );
-router.post("/", createCompany);
-router.post("/:id/projects", createProject);
+router.post("/", validateBody(CreateCompanyDtoSchema), createCompany);
+router.post("/:id/projects", validateBody(CreateProjectDtoSchema), createProject);
 
 export { router as CompanyRoute };
