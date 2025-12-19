@@ -13,7 +13,7 @@ const router = Router();
 
 router.get("/", getAllFreelances);
 router.get("/:id", getFreelanceById);
-router.get("/:id/matchingProjects", getAllMatchingProjects);
+router.get("/:id/matching-projects", getAllMatchingProjects);
 router.post("/", validateBody(CreateFreelanceDtoSchema), createFreelance);
 router.post("/:id/apply/:projectId", applyToProject);
 

@@ -7,6 +7,6 @@ import {
 const router = Router();
 
 router.get("/open", getAllOpenProjects);
-router.get("/:id/candidatesWithScore", getAllCandidates);
+router.get("/:id/candidates-with-score", getAllCandidates);
 
 export { router as ProjectRouter };
